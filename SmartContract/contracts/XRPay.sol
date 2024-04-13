@@ -4,6 +4,8 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
+import "hardhat/console.sol";
+
 contract XRPay {
     using ECDSA for bytes32;
     using SafeERC20 for IERC20;
@@ -27,7 +29,7 @@ contract XRPay {
         address indexed _tokenAddress
     );
 
-    event WithdrawEvent(
+    event ClaimEvent(
         uint256 indexed _index,
         uint256 _amount,
         uint8 _tokenType,
@@ -106,6 +108,7 @@ contract XRPay {
         );
 
         address signer = getSigner(_recipientAddressHash, _signature);
+        console.log(signer);
         require(signer == d.publicKey, "Invalid Signature");
 
         if (d.tokenType == 0) {
@@ -116,7 +119,7 @@ contract XRPay {
             token.safeTransfer(_recipientAddress, d.amount);
         }
 
-        emit WithdrawEvent(
+        emit ClaimEvent(
             _index,
             d.amount,
             d.tokenType,
