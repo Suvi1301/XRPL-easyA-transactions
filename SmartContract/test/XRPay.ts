@@ -3,11 +3,9 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { XRPay } from "../typechain-types";
 import { XRPayToken } from "../typechain-types";
-import { Wallet } from "ethers";
 
 describe("XRPay", () => {
   let accounts: SignerWithAddress[];
-  let deployer: SignerWithAddress;
   let alice: SignerWithAddress;
   let bob: SignerWithAddress;
   let contract: XRPay;
@@ -52,10 +50,14 @@ describe("XRPay", () => {
 
       const depositTx = await contract
         .connect(alice)
-        .deposit(keys.wallet.address, amount, ZERO_ADDRESS, 0, { value: amount });
+        .deposit(keys.wallet.address, amount, ZERO_ADDRESS, 0, {
+          value: amount,
+        });
       const receipt = await depositTx.wait();
 
-      const depositIndex = receipt.events?.find(c => c.event === "DepositEvent")?.args?.[0] as number;
+      const depositIndex = receipt.events?.find(
+        (c) => c.event === "DepositEvent"
+      )?.args?.[0] as number;
       const deposit = await contract.deposits(depositIndex);
 
       expect(deposit.publicKey).to.equal(keys.wallet.address);
@@ -99,7 +101,9 @@ describe("XRPay", () => {
 
       const depositTx = await contract
         .connect(alice)
-        .deposit(keys.wallet.address, amount, ZERO_ADDRESS, 0, { value: amount });
+        .deposit(keys.wallet.address, amount, ZERO_ADDRESS, 0, {
+          value: amount,
+        });
       await depositTx.wait();
 
       expect(await ethers.provider.getBalance(contract.address)).to.equal(
@@ -126,7 +130,6 @@ describe("XRPay", () => {
     });
   });
 
-
   describe("Claim", () => {
     function toEthSignedMessageHash(messageHash: string) {
       // Convert message hash to eth signed message hash
@@ -148,28 +151,35 @@ describe("XRPay", () => {
 
       const depositTx = await contract
         .connect(alice)
-        .deposit(keys.wallet.address, amount, ZERO_ADDRESS, 0, { value: amount });
+        .deposit(keys.wallet.address, amount, ZERO_ADDRESS, 0, {
+          value: amount,
+        });
       const receipt = await depositTx.wait();
 
-      const depositIndex = receipt.events?.find(c => c.event === "DepositEvent")?.args?.[0] as number;
+      const depositIndex = receipt.events?.find(
+        (c) => c.event === "DepositEvent"
+      )?.args?.[0] as number;
 
-      const messageHash = ethers.utils.solidityKeccak256(["address"], [bob.address]);
-      const signedMessageHash = toEthSignedMessageHash(messageHash)
+      const messageHash = ethers.utils.solidityKeccak256(
+        ["address"],
+        [bob.address]
+      );
+      const signedMessageHash = toEthSignedMessageHash(messageHash);
 
-      const previousBalance = await ethers.provider.getBalance(bob.address)
+      const previousBalance = await ethers.provider.getBalance(bob.address);
 
-      const claimTx = await contract
-        .claim(
-          depositIndex,
-          bob.address,
-          signedMessageHash,
-          keys.wallet.signMessage(ethers.utils.arrayify(messageHash)),
-        )
+      const claimTx = await contract.claim(
+        depositIndex,
+        bob.address,
+        signedMessageHash,
+        keys.wallet.signMessage(ethers.utils.arrayify(messageHash))
+      );
 
       await claimTx.wait();
-      expect(await ethers.provider.getBalance(bob.address)).to.eq(previousBalance.add(amount))
-
-    })
+      expect(await ethers.provider.getBalance(bob.address)).to.eq(
+        previousBalance.add(amount)
+      );
+    });
 
     it("should claim correct amount with ERC20 Token", async () => {
       const secret = "SECRET";
@@ -182,24 +192,28 @@ describe("XRPay", () => {
         .connect(bob)
         .deposit(keys.wallet.address, amount, token.address, 1);
       const receipt = await depositTx.wait();
-      const depositIndex = receipt.events?.find(c => c.event === "DepositEvent")?.args?.[0] as number;
+      const depositIndex = receipt.events?.find(
+        (c) => c.event === "DepositEvent"
+      )?.args?.[0] as number;
 
-      const messageHash = ethers.utils.solidityKeccak256(["address"], [alice.address]);
+      const messageHash = ethers.utils.solidityKeccak256(
+        ["address"],
+        [alice.address]
+      );
       const signedMessageHash = toEthSignedMessageHash(messageHash);
 
       const previousBalance = await token.balanceOf(alice.address);
 
-      const claimTx = await contract
-        .claim(
-          depositIndex,
-          alice.address,
-          signedMessageHash,
-          keys.wallet.signMessage(ethers.utils.arrayify(messageHash)),
-        )
+      const claimTx = await contract.claim(
+        depositIndex,
+        alice.address,
+        signedMessageHash,
+        keys.wallet.signMessage(ethers.utils.arrayify(messageHash))
+      );
 
-      // await claimTx.wait();
-      expect(await token.balanceOf(alice.address)).to.eq(previousBalance.add(amount));
-
-    })
+      expect(await token.balanceOf(alice.address)).to.eq(
+        previousBalance.add(amount)
+      );
+    });
   });
 });
