@@ -47,7 +47,7 @@ contract XRPay {
         require(_amount > 0, "Invalid Amount");
 
         if (_tokenType == 0) {
-            // require(msg.value == _amount, "Invalid Amount");
+            require(msg.value == _amount, "Invalid Amount");
             require(_tokenAddress == address(0), "Invalid Token Address");
 
             deposits.push(
@@ -108,7 +108,6 @@ contract XRPay {
         );
 
         address signer = getSigner(_recipientAddressHash, _signature);
-        console.log(signer);
         require(signer == d.publicKey, "Invalid Signature");
 
         if (d.tokenType == 0) {
