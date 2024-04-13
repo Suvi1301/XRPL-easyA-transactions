@@ -7,8 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 contract XRPayToken is ERC20 {
     uint8 private _decimals = 6;
 
-    constructor() ERC20("XRPayCoin", "XRPC") {
-    }
+    constructor() ERC20("XRPayCoin", "XRPC") {}
 
     function mint(uint256 _amount) public {
         _mint(msg.sender, _amount);
