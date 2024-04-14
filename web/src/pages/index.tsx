@@ -19,39 +19,35 @@ import {
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Inter } from "next/font/google";
 import { useState } from "react";
-import { useAccount, usePublicClient, useSendTransaction } from "wagmi";
+import {
+  useAccount,
+  usePublicClient,
+  useReadContract,
+  useSendTransaction,
+} from "wagmi";
 import { v4 as uuid } from "uuid";
 import { ethers } from "ethers";
 import { XRPayABI } from "@/abi/XRPay";
+import { XRPAY_CONTRACT, tokens } from "@/utils";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const tokens = [
-  {
-    name: "XRP",
-    symbol: "XRP",
-    address: "0x0000000000000000000000000000000000000000",
-    decimals: 18,
-  },
-  {
-    name: "XRPayCoin",
-    symbol: "XRPC",
-    address: "0xaEF0B30Ac473035F20F82C23f5Fe5a939b950B43",
-    decimals: 6,
-  },
-];
-
-const XRPAY_CONTRACT = "0x8C223eD2a2930C8a4547E0f2ef8f89eE6a251642";
 
 export default function Home() {
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [amount, setAmount] = useState(10);
   const [secret, setSecret] = useState("");
+  const [depositIndex, setDepositIndex] = useState<number>();
 
   const { address } = useAccount();
   const provider = usePublicClient();
   const { openConnectModal } = useConnectModal();
-  const { data: hash, sendTransaction } = useSendTransaction();
+  const { sendTransactionAsync } = useSendTransaction();
+
+  const { refetch } = useReadContract({
+    abi: XRPayABI,
+    address: XRPAY_CONTRACT,
+    functionName: "getDepositIndex",
+  });
 
   const onHandleDeposit = async () => {
     if (!provider) {
@@ -76,7 +72,14 @@ export default function Home() {
       0,
     ]) as `0x${string}`;
 
-    await sendTransaction({ to: XRPAY_CONTRACT, data, value: scaledAmount });
+    await sendTransactionAsync({
+      to: XRPAY_CONTRACT,
+      data,
+      value: scaledAmount,
+    });
+    const { data: depositIndex } = await refetch();
+
+    setDepositIndex((depositIndex as any).toString());
     setSecret(secret);
   };
 
@@ -149,9 +152,9 @@ export default function Home() {
               {address ? "Confirm" : "Connect Wallet"}
             </Button>
           </div>
-          {secret && hash && (
+          {secret && depositIndex && (
             <div className="bg-green-200 text-sm w-full text-center p-1">
-              https://localhost:3000/claim/{secret}
+              https://localhost:3000/claim?i={depositIndex}&s={secret}
             </div>
           )}
         </CardFooter>
