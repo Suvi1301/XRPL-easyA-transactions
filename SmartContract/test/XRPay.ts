@@ -6,6 +6,7 @@ import { XRPayToken } from "../typechain-types";
 
 describe("XRPay", () => {
   let accounts: SignerWithAddress[];
+  let deployer: SignerWithAddress;
   let alice: SignerWithAddress;
   let bob: SignerWithAddress;
   let contract: XRPay;
