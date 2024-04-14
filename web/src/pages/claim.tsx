@@ -92,7 +92,7 @@ export default function ClaimPage() {
     <main
       className={`flex min-h-screen flex-col items-center justify-center p-4 bg-black ${inter.className}`}
     >
-      <Card className="max-w-xl">
+      <Card className="max-w-xl w-full">
         <CardHeader>
           <CardTitle>Claim Payment</CardTitle>
           <CardDescription>You have been blessed with</CardDescription>
