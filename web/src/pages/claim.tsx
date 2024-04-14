@@ -86,7 +86,7 @@ export default function ClaimPage() {
     return null;
   }
 
-  const t = tokens.find((t) => t.address === data.tokenAddress);
+  const t = tokens.find((t) => t.address === (data as any).tokenAddress);
 
   return (
     <main
@@ -105,16 +105,18 @@ export default function ClaimPage() {
 
           <div className="flex flex-col space-y-1.5">
             <Label htmlFor="amount">Amount</Label>
-            <span>{Number(data.amount) / Math.pow(10, t?.decimals)}</span>
+            <span>
+              {Number((data as any).amount) / Math.pow(10, t!.decimals)}
+            </span>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
           <div className="w-full flex justify-end">
             <Button
               onClick={address ? onHandleClaim : openConnectModal}
-              disabled={Number(data.amount) === 0}
+              disabled={Number((data as any).amount) === 0}
             >
-              {Number(data.amount) === 0
+              {Number((data as any).amount) === 0
                 ? "Claimed"
                 : address
                 ? "Claim"
