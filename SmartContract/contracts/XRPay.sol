@@ -137,4 +137,8 @@ contract XRPay {
         address signer = ECDSA.recover(messageHash, signature);
         return signer;
     }
+
+    function getDepositIndex() public view returns (uint256) {
+        return deposits.length;
+    }
 }
