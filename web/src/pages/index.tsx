@@ -16,8 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Inter } from "next/font/google";
 import { useState } from "react";
+import { useAccount } from "wagmi";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,6 +39,9 @@ const tokens = [
 export default function Home() {
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [amount, setAmount] = useState(10);
+
+  const { address } = useAccount();
+  const { openConnectModal } = useConnectModal();
 
   const onHandleDeposit = () => {
     console.log(selectedToken, amount);
@@ -106,7 +111,9 @@ export default function Home() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={onHandleDeposit}>Confirm</Button>
+          <Button onClick={address ? onHandleDeposit : openConnectModal}>
+            {address ? "Confirm" : "Connect Wallet"}
+          </Button>
         </CardFooter>
       </Card>
     </main>
