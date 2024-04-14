@@ -180,7 +180,10 @@ export default function Home() {
           </div>
           {secret && depositIndex && (
             <div className="bg-green-200 text-sm w-full text-center p-1">
-              http://localhost:3000/claim?i={depositIndex}&s={secret}
+              {process.env.NODE_ENV === "development"
+                ? "http://localhost:3000"
+                : "https://xrpay.vercel.app"}
+              /claim?i={depositIndex}&s={secret}
             </div>
           )}
         </CardFooter>
