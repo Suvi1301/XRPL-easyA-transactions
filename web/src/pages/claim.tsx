@@ -82,15 +82,6 @@ export default function ClaimPage() {
     setIsMounted(true);
   }, []);
 
-  useEffect(() => {
-    const f = async () => {
-      const data = await refetch();
-      console.log(data);
-    };
-
-    f();
-  }, [depositIndex, refetch]);
-
   if (!isMounted || !data) {
     return null;
   }
