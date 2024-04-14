@@ -186,6 +186,57 @@ export const XRPayABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_index",
+        type: "uint256",
+      },
+    ],
+    name: "getDeposit",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "address",
+            name: "publicKey",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "tokenAddress",
+            type: "address",
+          },
+          {
+            internalType: "uint8",
+            name: "tokenType",
+            type: "uint8",
+          },
+          {
+            internalType: "address",
+            name: "senderAddress",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "timestamp",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct XRPay.Deposit",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getDepositIndex",
     outputs: [

@@ -141,4 +141,8 @@ contract XRPay {
     function getDepositIndex() public view returns (uint256) {
         return deposits.length;
     }
+
+    function getDeposit(uint256 _index) public view returns (Deposit memory) {
+        return deposits[_index];
+    }
 }

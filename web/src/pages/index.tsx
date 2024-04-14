@@ -154,7 +154,7 @@ export default function Home() {
           </div>
           {secret && depositIndex && (
             <div className="bg-green-200 text-sm w-full text-center p-1">
-              https://localhost:3000/claim?i={depositIndex}&s={secret}
+              http://localhost:3000/claim?i={depositIndex}&s={secret}
             </div>
           )}
         </CardFooter>
