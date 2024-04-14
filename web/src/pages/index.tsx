@@ -29,6 +29,8 @@ import { v4 as uuid } from "uuid";
 import { ethers } from "ethers";
 import { XRPayABI } from "@/abi/XRPay";
 import { XRPAY_CONTRACT, tokens } from "@/utils";
+import { zeroAddress } from "viem";
+import { ERC20ABI } from "@/abi/ERC20";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -49,6 +51,13 @@ export default function Home() {
     functionName: "getDepositIndex",
   });
 
+  const { refetch: fetchAllowance } = useReadContract({
+    abi: ERC20ABI,
+    address: selectedToken.address,
+    functionName: "allowance",
+    args: [address, XRPAY_CONTRACT],
+  });
+
   const onHandleDeposit = async () => {
     if (!provider) {
       return;
@@ -64,12 +73,29 @@ export default function Home() {
       selectedToken.decimals
     );
 
+    if (selectedToken.address !== zeroAddress) {
+      const allowance = await fetchAllowance();
+
+      if (Number(allowance) < scaledAmount) {
+        const erc20 = new ethers.Contract(selectedToken.address, ERC20ABI);
+        const data = erc20.interface.encodeFunctionData("increaseAllowance", [
+          XRPAY_CONTRACT,
+          scaledAmount,
+        ]) as `0x${string}`;
+
+        await sendTransactionAsync({
+          to: selectedToken.address as `0x${string}`,
+          data,
+        });
+      }
+    }
+
     const contract = new ethers.Contract(XRPAY_CONTRACT, XRPayABI);
     const data = contract.interface.encodeFunctionData("deposit", [
       address,
       scaledAmount,
       selectedToken.address,
-      0,
+      selectedToken.address === zeroAddress ? 0 : 1,
     ]) as `0x${string}`;
 
     await sendTransactionAsync({
