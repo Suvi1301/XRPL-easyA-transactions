@@ -53,7 +53,7 @@ export default function Home() {
 
   const { refetch: fetchAllowance } = useReadContract({
     abi: ERC20ABI,
-    address: selectedToken.address,
+    address: selectedToken.address as `0x${string}`,
     functionName: "allowance",
     args: [address, XRPAY_CONTRACT],
   });
