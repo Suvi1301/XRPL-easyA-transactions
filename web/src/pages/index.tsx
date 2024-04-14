@@ -76,7 +76,7 @@ export default function Home() {
     if (selectedToken.address !== zeroAddress) {
       const allowance = await fetchAllowance();
 
-      if (Number(allowance) < scaledAmount) {
+      if (Number(allowance.data) < scaledAmount) {
         const erc20 = new ethers.Contract(selectedToken.address, ERC20ABI);
         const data = erc20.interface.encodeFunctionData("increaseAllowance", [
           XRPAY_CONTRACT,
